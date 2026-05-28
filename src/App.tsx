@@ -91,6 +91,17 @@ export default function App() {
     }
   }, [stage]);
 
+  // Synchronize browser tab document title with current simulator progress
+  useEffect(() => {
+    if (stage === "landing") {
+      document.title = "DevLife";
+    } else if (stage === "ending") {
+      document.title = "Perjalanan Kariermu — DevLife";
+    } else {
+      document.title = "Menyusun Masa Depan...";
+    }
+  }, [stage]);
+
   // Smooth scroll to the newest phase card when it loads
   useEffect(() => {
     if (stage === "timeline" && activePhaseRef.current) {
@@ -319,11 +330,19 @@ export default function App() {
       <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-md border-b border-neutral-200/50 px-6 sm:px-12 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={handleRestart}>
-            <div className="w-8 h-8 rounded-lg bg-neutral-900 flex items-center justify-center text-white font-mono font-bold text-xs tracking-tighter">
-              DL
+            <div className="w-8 h-8 rounded-lg bg-neutral-950 flex items-center justify-center p-1.5 shadow-sm text-white transition-transform duration-300 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="w-full h-full" fill="none">
+                <path d="M 190 120 L 190 392" stroke="#ffffff" strokeWidth="42" strokeLinecap="round" />
+                <path d="M 190 120 C 290 120, 370 170, 370 256 C 370 342, 290 392, 190 392" stroke="#ffffff" strokeWidth="42" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M 190 256 C 245 256, 320 295, 360 345" stroke="#a3a3a3" strokeWidth="32" strokeLinecap="round" />
+                <circle cx="190" cy="120" r="16" fill="#ffffff" />
+                <circle cx="190" cy="256" r="14" fill="#a3a3a3" />
+                <circle cx="190" cy="392" r="16" fill="#ffffff" />
+                <circle cx="360" cy="345" r="14" fill="#ffffff" />
+              </svg>
             </div>
             <span className="font-display font-semibold tracking-tight text-neutral-900 text-sm">
-              DevLife Simulator
+              DevLife
             </span>
           </div>
           

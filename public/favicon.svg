@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Premium Dark Base (Squirclish rounded container) -->
+  <rect width="512" height="512" rx="140" fill="#0c0c0c"/>
+  
+  <!-- Subtle geometric elements representation of branching choices -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Curved Branch left -->
+    <path d="M 256 400 C 256 310, 206 250, 146 250 H 110" stroke="#525252" stroke-width="20" />
+    
+    <!-- Curved Branch right -->
+    <path d="M 256 400 C 256 310, 306 250, 366 250 H 402" stroke="#737373" stroke-width="20" />
+    
+    <!-- The Primary spine of the D loop -->
+    <line x1="190" y1="380" x2="190" y2="132" stroke="#ffffff" stroke-width="26" />
+    
+    <!-- The outer premium curve of D -->
+    <path d="M 190 132 C 275 132, 345 175, 345 256 C 345 337, 275 380, 190 380" stroke="#ffffff" stroke-width="26" />
+    
+    <!-- Inner decision fork branch -->
+    <path d="M 190 256 C 240 256, 310 286, 350 336" stroke="#d4d4d4" stroke-width="18" />
+  </g>
+  
+  <!-- Elegant minimal timeline nodes -->
+  <circle cx="190" cy="132" r="13" fill="#ffffff" />
+  <circle cx="190" cy="256" r="11" fill="#d4d4d4" />
+  <circle cx="190" cy="380" r="13" fill="#ffffff" />
+  <circle cx="350" cy="336" r="11" fill="#ffffff" />
+</svg>
