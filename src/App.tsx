@@ -25,6 +25,7 @@ import {
   History,
   Trophy
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { Profile, Stats, Phase, Choice, EventLog } from "./types";
 import { ONBOARDING_QUESTIONS } from "./data";
 
@@ -365,85 +366,131 @@ export default function App() {
 
       {/* Main Body */}
       <main className="relative pb-24">
-        
-        {/* LANDING PAGE STAGE */}
-        {stage === "landing" && (
-          <div className="max-w-4xl mx-auto px-6 sm:px-12 pt-16 sm:pt-28 text-center animate-fade-in">
-            {/* Minimal Intro Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium mb-8">
-              <Sparkles className="w-3.5 h-3.5 text-neutral-800 animate-pulse" />
-              <span>Simulator Karier Developer API v3</span>
-            </div>
-
-            {/* Cinematic Headings */}
-            <h1 className="font-display text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-900 leading-[1.1] max-w-3xl mx-auto mb-6">
-              Masa depan kariermu di bidang tech dikompilasi secara <span className="underline decoration-neutral-300 underline-offset-8">real-time</span>.
-            </h1>
-            
-            <p className="text-neutral-500 font-sans text-md sm:text-lg max-w-2xl mx-auto mb-12 font-normal leading-relaxed">
-              DevLife adalah simulator karier berbasis narasi AI. Dengan mengevaluasi fokus teknologi, kebiasaan belajar, dan impian utamamu, kami merajut proyeksi 15 tahun perjalanan kariermu yang penuh rintangan, pencapaian, dan warisan legendaris.
-            </p>
-
-            {/* Call To Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto mb-16">
-              <button
-                id="btn_start_simulation"
-                onClick={() => setStage("onboarding")}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white font-medium text-sm py-3.5 px-8 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+        <AnimatePresence mode="wait">
+          
+          {/* LANDING PAGE STAGE */}
+          {stage === "landing" && (
+            <motion.div
+              key="landing"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-4xl mx-auto px-6 sm:px-12 pt-16 sm:pt-28 text-center"
+            >
+              {/* Minimal Intro Badge */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium mb-8"
               >
-                Mulai Perjalanan
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              
-              <button
-                id="btn_load_demo"
-                onClick={handleLoadDemo}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-medium text-sm py-3.5 px-6 rounded-lg transition-colors border border-transparent hover:border-neutral-300/40"
+                <Sparkles className="w-3.5 h-3.5 text-neutral-800 animate-pulse" />
+                <span>Simulator Karier Developer API v3</span>
+              </motion.div>
+
+              {/* Cinematic Headings */}
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="font-display text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-900 leading-[1.1] max-w-3xl mx-auto mb-6"
               >
-                <History className="w-4 h-4 text-neutral-500" />
-                Coba Demo Sandbox
-              </button>
-            </div>
-
-            {/* High-fidelity editorial mockup cards to build trust & curiosity */}
-            <div className="border border-neutral-200/60 bg-white p-8 rounded-2xl shadow-xs text-left max-w-2xl mx-auto border-t-4 border-t-neutral-900 transition-all hover:shadow-md duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-xs text-neutral-400">SIMULASI KEPUTUSAN</span>
-                <span className="w-2.5 h-2.5 rounded-full bg-neutral-900 animate-pulse"></span>
-              </div>
-              <h3 className="font-display font-bold text-lg text-neutral-900 mb-1">Tahun 3 • Arsitektur Sistem</h3>
-              <p className="text-xs text-neutral-400 font-mono mb-4">KATEGORI: REKAYASA SISTEM</p>
+                Masa depan kariermu di bidang tech dikompilasi secara <span className="underline decoration-neutral-300 underline-offset-8">real-time</span>.
+              </motion.h1>
               
-              <p className="text-neutral-500 text-sm italic mb-6 leading-relaxed">
-                &ldquo;Setelah berhasil merombak codebase utama yang lambat, karyamu ramai dibahas di komunitas software engineer tingkat tinggi. Kamu dapat tawaran: jadi konsultan freelance sistem kelas kakap, join startup fintech yang baru dapat pendanaan besar, atau tetap bertahan di kantor lama...&rdquo;
-              </p>
-              
-              <div className="space-y-2">
-                <div className="p-3 bg-neutral-50/70 border border-neutral-200/50 rounded-lg text-xs font-mono text-neutral-600 flex items-center justify-between">
-                  <span>Opsi A: Ajukan penulisan ulang modul C++ inti demi performa maksimal</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-                </div>
-                <div className="p-3 bg-neutral-50/70 border border-neutral-200/50 rounded-lg text-xs font-mono text-neutral-400 flex items-center justify-between">
-                  <span>Opsi B: Terima investasi awal dan mulai petualangan baru di SCBD</span>
-                  <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
-                </div>
-              </div>
-            </div>
+              <motion.p 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="text-neutral-500 font-sans text-md sm:text-lg max-w-2xl mx-auto mb-12 font-normal leading-relaxed"
+              >
+                DevLife adalah simulator karier berbasis narasi AI. Dengan mengevaluasi fokus teknologi, kebiasaan belajar, dan impian utamamu, kami merajut proyeksi 15 tahun perjalanan kariermu yang penuh rintangan, pencapaian, dan warisan legendaris.
+              </motion.p>
 
-            {/* Subtle, elegant, cinematic footer */}
-            <footer className="mt-32 max-w-md mx-auto text-center opacity-65">
-              <p className="text-[11px] font-sans text-neutral-400 tracking-wide leading-relaxed font-normal">
-                No simulation can predict your future perfectly.
-                <span className="block mt-1 text-neutral-400/50 font-medium">But every choice still matters.</span>
-              </p>
-            </footer>
-          </div>
-        )}
+              {/* Call To Actions */}
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto mb-16"
+              >
+                <motion.button
+                  id="btn_start_simulation"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setStage("onboarding")}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white font-medium text-sm py-3.5 px-8 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer"
+                >
+                  Mulai Perjalanan
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+                
+                <motion.button
+                  id="btn_load_demo"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={handleLoadDemo}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-medium text-sm py-3.5 px-6 rounded-lg transition-colors border border-transparent hover:border-neutral-300/40 cursor-pointer"
+                >
+                  <History className="w-4 h-4 text-neutral-500" />
+                  Coba Demo Sandbox
+                </motion.button>
+              </motion.div>
+
+              {/* High-fidelity editorial mockup cards to build trust & curiosity */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="border border-neutral-200/60 bg-white p-8 rounded-2xl shadow-xs text-left max-w-2xl mx-auto border-t-4 border-t-neutral-900 transition-all hover:shadow-md duration-300"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <span className="font-mono text-xs text-neutral-400">SIMULASI KEPUTUSAN</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-neutral-900 animate-pulse"></span>
+                </div>
+                <h3 className="font-display font-bold text-lg text-neutral-900 mb-1">Tahun 3 • Arsitektur Sistem</h3>
+                <p className="text-xs text-neutral-400 font-mono mb-4">KATEGORI: REKAYASA SISTEM</p>
+                
+                <p className="text-neutral-500 text-sm italic mb-6 leading-relaxed">
+                  &ldquo;Setelah berhasil merombak codebase utama yang lambat, karyamu ramai dibahas di komunitas software engineer tingkat tinggi. Kamu dapat tawaran: jadi konsultan freelance sistem kelas kakap, join startup fintech yang baru dapat pendanaan besar, atau tetap bertahan di kantor lama...&rdquo;
+                </p>
+                
+                <div className="space-y-2">
+                  <div className="p-3 bg-neutral-50/70 border border-neutral-200/50 rounded-lg text-xs font-mono text-neutral-600 flex items-center justify-between">
+                    <span>Opsi A: Ajukan penulisan ulang modul C++ inti demi performa maksimal</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
+                  </div>
+                  <div className="p-3 bg-neutral-50/70 border border-neutral-200/50 rounded-lg text-xs font-mono text-neutral-400 flex items-center justify-between">
+                    <span>Opsi B: Terima investasi awal dan mulai petualangan baru di SCBD</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Subtle, elegant, cinematic footer */}
+              <footer className="mt-32 max-w-md mx-auto text-center opacity-65">
+                <p className="text-[11px] font-sans text-neutral-400 tracking-wide leading-relaxed font-normal">
+                  No simulation can predict your future perfectly.
+                  <span className="block mt-1 text-neutral-400/50 font-medium">But every choice still matters.</span>
+                </p>
+              </footer>
+            </motion.div>
+          )}
 
 
         {/* ONBOARDING FLOW */}
         {stage === "onboarding" && (
-          <div className="max-w-2xl mx-auto px-6 pt-12 animate-fade-in">
+          <motion.div
+            key="onboarding"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-2xl mx-auto px-6 pt-12"
+          >
             {/* Progress Step Header */}
             <div className="flex items-center justify-between mb-8 border-b border-neutral-200/50 pb-4">
               <span className="font-mono text-xs text-neutral-400 tracking-widest uppercase">
@@ -461,53 +508,67 @@ export default function App() {
               </div>
             </div>
 
-            {/* Dynamic Question Body */}
-            <div className="mb-10 text-left animate-slide-up">
-              <h2 className="font-display text-2xl sm:text-3.5xl font-bold text-neutral-900 tracking-tight leading-snug mb-3">
-                {ONBOARDING_QUESTIONS[questionIndex].title}
-              </h2>
-              <p className="text-neutral-500 text-sm sm:text-base font-sans">
-                {ONBOARDING_QUESTIONS[questionIndex].subtitle}
-              </p>
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={questionIndex}
+                initial={{ opacity: 0, x: 25 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -25 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="text-left"
+              >
+                {/* Dynamic Question Body */}
+                <div className="mb-10">
+                  <h2 className="font-display text-2xl sm:text-3.5xl font-bold text-neutral-900 tracking-tight leading-snug mb-3">
+                    {ONBOARDING_QUESTIONS[questionIndex].title}
+                  </h2>
+                  <p className="text-neutral-500 text-sm sm:text-base font-sans">
+                    {ONBOARDING_QUESTIONS[questionIndex].subtitle}
+                  </p>
+                </div>
 
-            {/* Error messaging state if any */}
-            {errorText && (
-              <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200/60 text-red-700 text-xs flex gap-2 items-center">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                <span>{errorText}</span>
-              </div>
-            )}
+                {/* Error messaging state if any */}
+                {errorText && (
+                  <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200/60 text-red-700 text-xs flex gap-2 items-center">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                    <span>{errorText}</span>
+                  </div>
+                )}
 
-            {/* Elegant Row Options Stacked */}
-            <div className="space-y-3.5" id={`question_${questionIndex}_options`}>
-              {ONBOARDING_QUESTIONS[questionIndex].options.map((option, idx) => {
-                const isSelected = profile[ONBOARDING_QUESTIONS[questionIndex].field] === option.value;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handleOnboardingSelect(option.value)}
-                    className={`w-full text-left p-5 rounded-xl border transition-all duration-300 group flex items-start gap-4 cursor-pointer outline-none bg-white ${
-                      isSelected 
-                        ? "border-neutral-950 shadow-sm ring-1 ring-neutral-920" 
-                        : "border-neutral-200/70 hover:border-neutral-400/85 hover:shadow-xs"
-                    }`}
-                  >
-                    <div className="mt-0.5 w-[20px] h-[20px] rounded-full border border-neutral-300 flex items-center justify-center text-xs text-white shrink-0 group-hover:border-neutral-800 transition-colors">
-                      <div className="w-2.5 h-2.5 rounded-full bg-neutral-900 scale-0 group-hover:scale-100 transition-transform duration-200" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="font-display font-semibold text-[15px] sm:text-[16px] text-neutral-900">
-                        {option.label}
-                      </p>
-                      <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed font-sans group-hover:text-neutral-600">
-                        {option.description}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                {/* Elegant Row Options Stacked */}
+                <div className="space-y-3.5" id={`question_${questionIndex}_options`}>
+                  {ONBOARDING_QUESTIONS[questionIndex].options.map((option, idx) => {
+                    const isSelected = profile[ONBOARDING_QUESTIONS[questionIndex].field] === option.value;
+                    return (
+                      <motion.button
+                        key={idx}
+                        whileHover={{ scale: 1.015, x: 3 }}
+                        whileTap={{ scale: 0.995 }}
+                        transition={{ duration: 0.2 }}
+                        onClick={() => handleOnboardingSelect(option.value)}
+                        className={`w-full text-left p-5 rounded-xl border transition-all duration-300 group flex items-start gap-4 cursor-pointer outline-none bg-white ${
+                          isSelected 
+                            ? "border-neutral-950 shadow-sm ring-1 ring-neutral-920" 
+                            : "border-neutral-200/70 hover:border-neutral-400/85 hover:shadow-xs"
+                        }`}
+                      >
+                        <div className="mt-0.5 w-[20px] h-[20px] rounded-full border border-neutral-300 flex items-center justify-center text-xs text-white shrink-0 group-hover:border-neutral-800 transition-colors">
+                          <div className="w-2.5 h-2.5 rounded-full bg-neutral-900 scale-0 group-hover:scale-100 transition-transform duration-200" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-display font-semibold text-[15px] sm:text-[16px] text-neutral-900">
+                            {option.label}
+                          </p>
+                          <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed font-sans group-hover:text-neutral-600">
+                            {option.description}
+                          </p>
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </AnimatePresence>
 
             {/* Back Button Navigation if applicable */}
             {questionIndex > 0 && (
@@ -519,38 +580,83 @@ export default function App() {
                 ← Kembali ke pertanyaan sebelumnya
               </button>
             )}
-          </div>
+          </motion.div>
         )}
 
 
         {/* SYSTEM TIMELINE COMPLIER STAGE (CINEMATIC SIM LOGS) */}
         {stage === "compiling" && (
-          <div className="max-w-md mx-auto px-6 pt-24 text-center animate-fade-in">
-            <div className="relative inline-flex items-center justify-center mb-8">
-              <div className="absolute inset-0 rounded-full bg-neutral-100 animate-ping opacity-70 w-16 h-16 m-auto"></div>
-              <div className="relative w-14 h-14 bg-neutral-900 rounded-2xl flex items-center justify-center text-white">
-                <Terminal className="w-6 h-6 animate-pulse" />
-              </div>
+          <motion.div
+            key="compiling"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-md mx-auto px-6 pt-24 text-center"
+          >
+            {/* Cinematic Centerpiece Orbiting Loader */}
+            <div className="relative w-20 h-20 mx-auto mb-10 flex items-center justify-center">
+              <motion.div 
+                className="absolute inset-0 rounded-full border border-neutral-200"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.div 
+                className="absolute w-16 h-16 rounded-full border-t border-b border-neutral-800"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.div 
+                className="absolute w-11 h-11 rounded-full bg-neutral-950 flex items-center justify-center text-white text-xs font-mono font-black shadow-lg"
+                animate={{ scale: [0.95, 1.05, 0.95] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {Math.min(Math.round(((compilingStep + 1) / compilingLogs.length) * 100), 100)}%
+              </motion.div>
             </div>
 
-            <h3 className="font-display font-extrabold text-xl sm:text-2xl text-neutral-950 mb-2 tracking-tight">
-              Menyusun Proyeksi Jalur Kariermu
-            </h3>
-            <p className="text-neutral-400 text-xs font-mono mb-8 tracking-widest uppercase">
+            {/* Seamless fading cinematic labels dependent on compiling step */}
+            <div className="h-14 mb-2 overflow-hidden flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.h3 
+                  key={Math.min(Math.floor(compilingStep / 2), 2)}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-black text-2xl sm:text-3xl text-neutral-950 tracking-tight leading-tight"
+                >
+                  {compilingStep <= 1 
+                    ? "Menganalisis kebiasaanmu..." 
+                    : compilingStep <= 3 
+                      ? "Menyusun kemungkinan masa depan..." 
+                      : "Mensimulasikan perjalanan karier..."
+                  }
+                </motion.h3>
+              </AnimatePresence>
+            </div>
+
+            <p className="text-neutral-400 text-[10px] font-mono mb-8 tracking-widest uppercase">
               DEVLIFE ENGINE IS ACTIVE
             </p>
 
             {/* Modern micro-terminal display */}
-            <div className="bg-[#1f1f1f] text-[#ebebeb] text-left p-5 rounded-lg font-mono text-[11px] sm:text-[12px] shadow-lg leading-6 border border-neutral-800/80 max-w-md mx-auto min-h-[180px] flex flex-col justify-between">
+            <div className="bg-[#1f1f1f] text-[#ebebeb] text-left p-5 rounded-lg font-mono text-[11px] sm:text-[12px] shadow-lg leading-6 border border-neutral-800/85 max-w-md mx-auto min-h-[180px] flex flex-col justify-between">
               <div>
                 <p className="text-neutral-500 select-none pb-2 border-b border-neutral-800 mb-2">SYSTEM COMPILE LOGS</p>
                 {compilingLogs.slice(0, compilingStep + 1).map((logLine, index) => (
-                  <div key={index} className="flex gap-2 text-wrap break-all items-start animate-fade-in">
+                  <motion.div 
+                    key={index} 
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex gap-2 text-wrap break-all items-start"
+                  >
                     <span className="text-[#a0a0a0] shrink-0 font-medium select-none">&rsaquo;</span>
                     <span className={index === compilingStep ? "text-emerald-400" : "text-neutral-300"}>
                       {logLine}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
               <div className="text-[#888] text-[10px] text-right mt-4 pt-2 border-t border-neutral-800/60 font-mono">
@@ -561,13 +667,20 @@ export default function App() {
             <p className="text-xs text-neutral-500 font-sans mt-8 italic">
               Harap tunggu sebentar. Sistem kami sedang meraba masa depanmu secara real-time.
             </p>
-          </div>
+          </motion.div>
         )}
 
 
         {/* THE CORE TIMELINE EXPERIENCE */}
         {stage === "timeline" && (
-          <div className="max-w-5xl mx-auto px-6 sm:px-12 pt-8">
+          <motion.div
+            key="timeline"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-5xl mx-auto px-6 sm:px-12 pt-8"
+          >
             
             {/* Visual Header Grid for Profile + Live Vitals */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
@@ -610,7 +723,7 @@ export default function App() {
               <div className="lg:col-span-8 bg-white border border-neutral-200/50 p-8 rounded-2xl relative overflow-hidden flex flex-col justify-between shadow-xs">
                 <div>
                   <div className="flex items-center justify-between mb-8">
-                    <h4 className="font-mono text-[11px] tracking-wider text-neutral-400 uppercase flex items-center gap-1.5">
+                     <h4 className="font-mono text-[11px] tracking-wider text-neutral-400 uppercase flex items-center gap-1.5">
                       <Briefcase className="w-3.5 h-3.5 text-neutral-400" />
                       Status Karaktermu
                     </h4>
@@ -644,7 +757,12 @@ export default function App() {
                       </div>
                       <div className="w-full mt-6">
                         <div className="h-[2px] bg-neutral-100 rounded-full overflow-hidden w-full">
-                          <div className="h-full bg-neutral-700 rounded-full transition-all duration-1000" style={{ width: `${stats.money}%` }} />
+                          <motion.div 
+                            className="h-full bg-neutral-700 rounded-full" 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.money}%` }}
+                            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -665,7 +783,12 @@ export default function App() {
                       </div>
                       <div className="w-full mt-6">
                         <div className="h-[2px] bg-neutral-100 rounded-full overflow-hidden w-full">
-                          <div className={`h-full rounded-full transition-all duration-1000 ${stats.stress > 70 ? "bg-rose-500/85" : "bg-neutral-700"}`} style={{ width: `${stats.stress}%` }} />
+                          <motion.div 
+                            className={`h-full rounded-full ${stats.stress > 70 ? "bg-rose-500/85" : "bg-neutral-700"}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.stress}%` }}
+                            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -686,7 +809,12 @@ export default function App() {
                       </div>
                       <div className="w-full mt-6">
                         <div className="h-[2px] bg-neutral-100 rounded-full overflow-hidden w-full">
-                          <div className="h-full bg-neutral-700 rounded-full transition-all duration-1000" style={{ width: `${stats.codingSkill}%` }} />
+                          <motion.div 
+                            className="h-full bg-neutral-700 rounded-full" 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.codingSkill}%` }}
+                            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -707,7 +835,12 @@ export default function App() {
                       </div>
                       <div className="w-full mt-6">
                         <div className="h-[2px] bg-neutral-100 rounded-full overflow-hidden w-full">
-                          <div className="h-full bg-neutral-700 rounded-full transition-all duration-1000" style={{ width: `${stats.reputation}%` }} />
+                          <motion.div 
+                            className="h-full bg-neutral-700 rounded-full" 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.reputation}%` }}
+                            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -728,7 +861,12 @@ export default function App() {
                       </div>
                       <div className="w-full mt-6">
                         <div className="h-[2px] bg-neutral-100 rounded-full overflow-hidden w-full">
-                          <div className="h-full bg-neutral-700 rounded-full transition-all duration-1000" style={{ width: `${stats.motivation}%` }} />
+                          <motion.div 
+                            className="h-full bg-neutral-700 rounded-full" 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stats.motivation}%` }}
+                            transition={{ type: "spring", stiffness: 60, damping: 15 }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -776,12 +914,17 @@ export default function App() {
                 const isSelected = phase.chosenId !== undefined;
                 
                 return (
-                  <div 
+                  <motion.div 
                     key={idx}
                     ref={isActive ? activePhaseRef : null}
-                    className={`relative transition-all duration-500 flex flex-col items-stretch ${
-                      isActive ? "scale-100 opacity-100" : "scale-[0.98] opacity-50 filter "
-                    }`}
+                    initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                    animate={{ 
+                      opacity: isActive ? 1 : 0.45, 
+                      y: 0, 
+                      scale: isActive ? 1 : 0.98
+                    }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative flex flex-col items-stretch"
                   >
                     
                     {/* Tiny chronological year pill */}
@@ -881,9 +1024,12 @@ export default function App() {
                           </p>
                           <div className="grid grid-cols-1 gap-3">
                             {phase.choices.map((choice) => (
-                              <button
+                              <motion.button
                                 key={choice.id}
                                 disabled={isApiLoading}
+                                whileHover={{ scale: 1.015, x: 2 }}
+                                whileTap={{ scale: 0.995 }}
+                                transition={{ duration: 0.2 }}
                                 onClick={() => handleTimelineChoice(idx, choice)}
                                 className="w-full text-left p-4 rounded-lg border border-neutral-200 hover:border-neutral-800 hover:bg-neutral-50/50 transition-all duration-300 cursor-pointer flex flex-col gap-1 outline-none relative group disabled:opacity-50"
                               >
@@ -898,7 +1044,7 @@ export default function App() {
                                 <span className="text-[11px] sm:text-[12px] text-neutral-400 font-sans group-hover:text-neutral-500 pl-0 sm:pl-[44px] italic leading-tight">
                                   &ldquo;{choice.flavorText}&rdquo;
                                 </span>
-                              </button>
+                              </motion.button>
                             ))}
                           </div>
                         </div>
@@ -916,7 +1062,7 @@ export default function App() {
 
                     </div>
 
-                  </div>
+                  </motion.div>
                 );
               })}
 
@@ -933,16 +1079,28 @@ export default function App() {
               <div ref={timelineEndRef} />
             </div>
 
-          </div>
+          </motion.div>
         )}
 
 
         {/* DETAILED LEGACY SUMMARY PAGE (ONLY IF STAGE === ending) */}
         {stage === "ending" && (
-          <div className="max-w-3xl mx-auto px-6 pt-16 text-center animate-fade-in">
-            <div className="inline-flex items-center justify-center p-4 bg-neutral-900 text-white rounded-full mb-6 shadow-sm">
-              <Trophy className="w-8 h-8 text-yellow-300 animate-bounce" />
-            </div>
+          <motion.div
+            key="ending"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-3xl mx-auto px-6 pt-16 text-center"
+          >
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
+              className="inline-flex items-center justify-center p-4 bg-neutral-900 text-white rounded-full mb-6 shadow-sm"
+            >
+              <Trophy className="w-8 h-8 text-yellow-300" />
+            </motion.div>
 
             <p className="font-mono text-xs text-neutral-400 uppercase tracking-widest leading-none mb-2">HASIL SIMULASI</p>
             <h2 className="font-display text-4xl sm:text-5xl font-black text-neutral-900 tracking-tight leading-tight mb-8">
@@ -950,7 +1108,12 @@ export default function App() {
             </h2>
 
             {/* Printout of full legacy details */}
-            <div className="bg-white border border-neutral-200/80 p-6 sm:p-10 rounded-2xl shadow-sm text-left max-w-2xl mx-auto border-t-8 border-t-neutral-950">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-white border border-neutral-200/80 p-6 sm:p-10 rounded-2xl shadow-sm text-left max-w-2xl mx-auto border-t-8 border-t-neutral-950"
+            >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-neutral-200 pb-4 mb-6">
                 <div>
                   <h3 className="font-mono text-xs text-neutral-400 uppercase tracking-wider mb-1">
@@ -982,12 +1145,18 @@ export default function App() {
                   </h4>
                   <ul className="space-y-3">
                     {phases[phases.length - 1].lessonsLearned?.map((lesson, index) => (
-                      <li key={index} className="flex gap-3 items-start text-xs sm:text-sm text-neutral-600">
+                      <motion.li 
+                        key={index} 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        className="flex gap-3 items-start text-xs sm:text-sm text-neutral-600"
+                      >
                         <span className="w-5 h-5 rounded-md bg-neutral-100 flex items-center justify-center font-mono font-bold text-[10px] text-neutral-700 shrink-0 mt-0.5">
                           0{index + 1}
                         </span>
                         <span className="leading-relaxed">{lesson}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
                 </div>
@@ -1002,28 +1171,32 @@ export default function App() {
                   <p>AMBISI: {profile.habits}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Restart simulated path controls */}
             <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
+              <motion.button
                 id="btn_restart_legacy"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleRestart}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white font-semibold text-sm py-3 px-8 rounded-lg shadow-sm hover:shadow transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white font-semibold text-sm py-3 px-8 rounded-lg shadow-sm hover:shadow transition-all cursor-pointer"
               >
                 Coba Jalur Karier Lain
                 <RefreshCw className="w-4 h-4 text-neutral-300" />
-              </button>
+              </motion.button>
               
-              <button
+              <motion.button
                 id="btn_share_record_copy"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   alert("Detail simulasi berhasil disalin ke papan klip!");
                 }}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-white border border-neutral-200 hover:border-neutral-800 text-neutral-700 font-semibold text-sm py-3 px-8 rounded-lg shadow-xs hover:shadow-sm transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-white border border-neutral-200 hover:border-neutral-800 text-neutral-700 font-semibold text-sm py-3 px-8 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer"
               >
                 Salin Ringkasan Karier
-              </button>
+              </motion.button>
             </div>
 
             {/* Subtle, elegant, cinematic footer */}
@@ -1034,9 +1207,10 @@ export default function App() {
               </p>
             </footer>
 
-          </div>
+          </motion.div>
         )}
 
+        </AnimatePresence>
       </main>
     </div>
   );

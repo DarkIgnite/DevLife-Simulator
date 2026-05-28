@@ -3,6 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
+import { getLocalFirstPhase, getLocalNextPhase } from "./server-fallback";
 
 dotenv.config();
 
@@ -11,15 +12,26 @@ app.use(express.json());
 
 const PORT = 3000;
 
-// Initialize Google Gen AI
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+// Lazy initialization of Google Gen AI to prevent start-up failure in environments without keys
+let aiClient: GoogleGenAI | null = null;
+function getAiClient(): GoogleGenAI | null {
+  if (!aiClient) {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) {
+      console.warn("WARNING: GEMINI_API_KEY is not set. High-fidelity local simulation fallbacks will be used.");
+      return null;
     }
+    aiClient = new GoogleGenAI({
+      apiKey: key,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
   }
-});
+  return aiClient;
+}
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -28,10 +40,17 @@ app.get("/api/health", (req, res) => {
 
 // JSON API Route: Generate First Career Phase
 app.post("/api/generate-first-phase", async (req, res) => {
+  const profile = req.body.profile;
   try {
-    const { profile } = req.body;
     if (!profile) {
       return res.status(400).json({ error: "Profile details are required." });
+    }
+
+    const ai = getAiClient();
+    if (!ai) {
+      console.log("No Gemini API key detected. Running high-fidelity local fallback generator for Year 1.");
+      const fallbackData = getLocalFirstPhase(profile);
+      return res.json(fallbackData);
     }
 
     const systemPrompt = `Kamu adalah mesin narasi inti dari 'DevLife Simulator', sebuah simulator perjalanan karier RPG teks beresolusi tinggi, sinematik, dan imersif.
@@ -58,62 +77,75 @@ Hitung penyesuaian dampak statistik awal yang akan diterapkan (antara -25 dan +2
 
 Berikan tepat 3 pilihan percabangan yang menarik dan dramatis (A, B, dan C) yang menunjukkan bagaimana mereka bereaksi terhadap situasi Tahun 1 ini. Setiap pilihan harus memiliki teks opsi yang jelas dan teks vibe emosional singkat (flavorText dalam bahasa Indonesia).`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: [
-        { text: systemPrompt },
-        { text: userPrompt }
-      ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          required: ["year", "title", "narrative", "statChanges", "choices"],
-          properties: {
-            year: { type: Type.STRING, description: "Should be 'Year 1'" },
-            title: { type: Type.STRING, description: "Compelling and poetic subtitle for Year 1 (e.g. 'The Legacy Crucible')" },
-            narrative: { type: Type.STRING, description: "Detailed narrative in the 2nd person (120-180 words)" },
-            statChanges: {
-              type: Type.OBJECT,
-              required: ["money", "stress", "codingSkill", "reputation", "motivation"],
-              properties: {
-                money: { type: Type.INTEGER, description: "Adjustment to Money stat" },
-                stress: { type: Type.INTEGER, description: "Adjustment to Stress stat" },
-                codingSkill: { type: Type.INTEGER, description: "Adjustment to Coding Skill stat" },
-                reputation: { type: Type.INTEGER, description: "Adjustment to Reputation stat" },
-                motivation: { type: Type.INTEGER, description: "Adjustment to Motivation stat" }
-              }
-            },
-            choices: {
-              type: Type.ARRAY,
-              items: {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: [
+          { text: systemPrompt },
+          { text: userPrompt }
+        ],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            required: ["year", "title", "narrative", "statChanges", "choices"],
+            properties: {
+              year: { type: Type.STRING, description: "Should be 'Year 1'" },
+              title: { type: Type.STRING, description: "Compelling and poetic subtitle for Year 1 (e.g. 'The Legacy Crucible')" },
+              narrative: { type: Type.STRING, description: "Detailed narrative in the 2nd person (120-180 words)" },
+              statChanges: {
                 type: Type.OBJECT,
-                required: ["id", "text", "flavorText"],
+                required: ["money", "stress", "codingSkill", "reputation", "motivation"],
                 properties: {
-                  id: { type: Type.STRING, description: "Either 'A', 'B', or 'C'" },
-                  text: { type: Type.STRING, description: "The literal choice text" },
-                  flavorText: { type: Type.STRING, description: "1-sentence context/consequence expectation" }
+                  money: { type: Type.INTEGER, description: "Adjustment to Money stat" },
+                  stress: { type: Type.INTEGER, description: "Adjustment to Stress stat" },
+                  codingSkill: { type: Type.INTEGER, description: "Adjustment to Coding Skill stat" },
+                  reputation: { type: Type.INTEGER, description: "Adjustment to Reputation stat" },
+                  motivation: { type: Type.INTEGER, description: "Adjustment to Motivation stat" }
+                }
+              },
+              choices: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  required: ["id", "text", "flavorText"],
+                  properties: {
+                    id: { type: Type.STRING, description: "Either 'A', 'B', or 'C'" },
+                    text: { type: Type.STRING, description: "The literal choice text" },
+                    flavorText: { type: Type.STRING, description: "1-sentence context/consequence expectation" }
+                  }
                 }
               }
             }
           }
         }
-      }
-    });
+      });
 
-    const data = JSON.parse(response.text?.trim() || "{}");
-    res.json(data);
+      const data = JSON.parse(response.text?.trim() || "{}");
+      if (!data.year || !data.title || !data.narrative) {
+        throw new Error("Invalid response schema generated by Gemini.");
+      }
+      return res.json(data);
+    } catch (apiError: any) {
+      console.warn("Gemini API generation failed. Engaging local high-fidelity fallback generator.", apiError);
+      const fallbackData = getLocalFirstPhase(profile);
+      return res.json(fallbackData);
+    }
   } catch (error: any) {
-    console.error("Error generating first phase:", error);
-    res.status(500).json({ error: error.message || "Failed to generate first career phase." });
+    console.error("Critical error in /api/generate-first-phase:", error);
+    try {
+      const fallbackData = getLocalFirstPhase(profile || {});
+      return res.json(fallbackData);
+    } catch (fatalExc) {
+      res.status(500).json({ error: error.message || "Failed to generate first career phase." });
+    }
   }
 });
 
 // JSON API Route: Generate Next Career Phase or Ending
 app.post("/api/generate-next-phase", async (req, res) => {
+  const { profile, currentStats, history, nextPhaseIndex } = req.body;
   try {
-    const { profile, currentStats, history, nextPhaseIndex } = req.body;
-    
     // nextPhaseIndex mapping:
     // 1 -> Year 3: Seniority & The Mid-Career Crossroads
     // 2 -> Year 5: Side Projects & Viral Hustles, or Startup Pivots
@@ -123,6 +155,13 @@ app.post("/api/generate-next-phase", async (req, res) => {
     const isEnding = nextPhaseIndex >= 4;
     const yearMapping = ["Year 1", "Year 3", "Year 5", "Year 10", "Year 15 (Ending)"];
     const targetYear = yearMapping[nextPhaseIndex] || `Year ${nextPhaseIndex * 3}`;
+
+    const ai = getAiClient();
+    if (!ai) {
+      console.log(`No Gemini API key detected. Running high-fidelity local next-phase generator for Index ${nextPhaseIndex}.`);
+      const fallbackData = getLocalNextPhase(profile || {}, currentStats || {}, history || [], nextPhaseIndex);
+      return res.json(fallbackData);
+    }
 
     const systemPrompt = `Kamu adalah mesin narasi dari 'DevLife Simulator', sebuah RPG karier sinematik.
 Semua teks yang dihasilkan (nama tahun, judul, narasi, teks pilihan, tipe akhir, dan pelajaran berharga) WAJIB ditulis dalam Bahasa Indonesia yang sangat natural, kasual-cerdas, mengalir santai tapi tetap premium, serta sangat relevan bagi anak IT/developer di Indonesia. Hindari penggunaan bahasa yang kaku seperti dokumen resmi pemerintah atau textbook akademis.
@@ -206,27 +245,40 @@ Harap hasilkan ${isEnding ? "AKHIR KARIER YANG EPIK (The Ultimate Legacy)" : `fa
           }
         };
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: [
-        { text: systemPrompt },
-        { text: userPrompt }
-      ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: responseSchema
-      }
-    });
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: [
+          { text: systemPrompt },
+          { text: userPrompt }
+        ],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: responseSchema
+        }
+      });
 
-    const data = JSON.parse(response.text?.trim() || "{}");
-    // Ensure isEnding matches the structure output
-    if (isEnding) {
-      data.isEnding = true;
+      const data = JSON.parse(response.text?.trim() || "{}");
+      if (!data.year || !data.title || !data.narrative) {
+        throw new Error("Invalid response schema generated by Gemini.");
+      }
+      if (isEnding) {
+        data.isEnding = true;
+      }
+      return res.json(data);
+    } catch (apiError: any) {
+      console.warn("Gemini API generation failed. Engaging local high-fidelity fallback generator.", apiError);
+      const fallbackData = getLocalNextPhase(profile || {}, currentStats || {}, history || [], nextPhaseIndex);
+      return res.json(fallbackData);
     }
-    res.json(data);
   } catch (error: any) {
-    console.error("Error generating next career phase:", error);
-    res.status(500).json({ error: error.message || "Failed to generate next career phase." });
+    console.error("Critical error in /api/generate-next-phase:", error);
+    try {
+      const fallbackData = getLocalNextPhase(profile || {}, currentStats || {}, history || [], nextPhaseIndex);
+      return res.json(fallbackData);
+    } catch (fatalExc) {
+      res.status(500).json({ error: error.message || "Failed to generate next career phase." });
+    }
   }
 });
 
