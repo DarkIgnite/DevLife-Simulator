@@ -1,0 +1,6 @@
+{
+  "name": "DevLife Simulator",
+  "description": "An interactive career journey simulator for IT students and developers based on life choices, habits, and career decisions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
